@@ -7,7 +7,7 @@ Should work on any Windows machine.
 
 ## Quick Installation Guides
 ### Download EXE
-1) Download the EXE straight from GitHub
+1) Download the latest EXE from Releases
 2) Run the executable
 
 ### Compile Source
