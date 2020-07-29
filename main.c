@@ -31,14 +31,14 @@ int main(){
     while (1){ /* Creates loop until break */
       printf("Hit or Stand?: ");
       scanf("%s",input);
-      if (strcmp(input,"h")==0||strcmp(input,"hit")==0){ /* Hits player with a card */
+      if (strcmp(input,"h")==0||strcmp(input,"hit")==0||strcmp(input,"Hit")==0||strcmp(input,"H")==0){ /* Hits player with a card */
         system("cls");
         printf("You Hit.\n==========\n\n");
         givecard('p',1);
         displaycards('h');
         displaycards('p');
       }
-      if (strcmp(input,"s")==0||strcmp(input,"stand")==0){ /* Lets the player Stand */
+      if (strcmp(input,"s")==0||strcmp(input,"stand")==0||strcmp(input,"Stand")==0||strcmp(input,"S")==0){ /* Lets the player Stand */
         system("cls");
         printf("You Stand.\n==========\n\n");
         break;
