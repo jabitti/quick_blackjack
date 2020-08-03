@@ -29,6 +29,9 @@ int main(){
     displaycards('p');
     /* ==========PLAYER'S TURN========== */
     while (1){ /* Creates loop until break */
+      if (psum == 21){
+        break;
+      }
       printf("Hit or Stand?: ");
       scanf("%s",input);
       if (strcmp(input,"h")==0||strcmp(input,"hit")==0||strcmp(input,"Hit")==0||strcmp(input,"H")==0){ /* Hits player with a card */
