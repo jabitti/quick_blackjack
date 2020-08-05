@@ -27,7 +27,7 @@ int main(){
     system("cls"); /* This command is used to clear console for better looks */
     if (deckreset == 1){
       printf("\n\n\n***DECK REFRESHED***\n\n\n");
-      standin = 0;
+      deckreset = 0;
     }
     printf("\nWelcome to Blackjack!\n==========\n\n");
     /* ==========Starting Deal (2 cards for each)========== */
@@ -236,7 +236,7 @@ void checkdeck(){
   if (tot <= 15){ /* If less than 16 cards are available, the entire deck is reset */
     int newdeck[8][13] = {{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10}};
     memcpy(wdeck, newdeck, sizeof(wdeck));
-    deckreset = 1; /* Referenced in the main funtion to
+    deckreset = 1; /* Referenced in the main funtion to tell the player the deck reset */
   }
 }
 
