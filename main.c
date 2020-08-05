@@ -6,21 +6,29 @@
 /* Variable Declarations */
 int upper = 10; /* Declares the highest value card */
 int lower = 1; /* Declares the lowest value card */
+int wdeck[8][13] = {{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10}}; /* Declares the entire double deck of cards */
 int pdeck[10]; /* Declares the player's 'hand' (max 10 cards) */
 int psum = 0; /* Declares the player's total */
 int pplace = 0; /* Starting place of player's deck */
 int ddeck[10]; /* Declares the dealer's 'hand' (max 10 cards) */
 int dsum = 0; /* Declares the dealer's total */
 int dplace = 0; /* Starting place of dealer's deck */
+int deckreset = 0;
 /* Function Declarations */
 void givecard(char who, int times); /* p or d | any */
 void displaycards(char who); /* p, h, or d */
+void checkdeck();
+/* void tempdisdeck(); */
 
 int main(){
   while (1){ /* Makes the program continuous without having to re-run the executable */
     char input[10];
     srand(time(0)); /* Generates the random key needed for randomness */
     system("cls"); /* This command is used to clear console for better looks */
+    if (deckreset == 1){
+      printf("\n\n\n***DECK REFRESHED***\n\n\n");
+      standin = 0;
+    }
     printf("\nWelcome to Blackjack!\n==========\n\n");
     /* ==========Starting Deal (2 cards for each)========== */
     givecard('d',2);
@@ -29,11 +37,11 @@ int main(){
     displaycards('p');
     /* ==========PLAYER'S TURN========== */
     while (1){ /* Creates loop until break */
-      if (psum == 21){
+      if (psum == 21){ /* Checks for Blackjack on first deal */
         break;
       }
       printf("Hit or Stand?: ");
-      scanf("%s",input);
+      scanf(" %s",input);
       if (strcmp(input,"h")==0||strcmp(input,"hit")==0||strcmp(input,"Hit")==0||strcmp(input,"H")==0){ /* Hits player with a card */
         system("cls");
         printf("You Hit.\n==========\n\n");
@@ -75,12 +83,12 @@ int main(){
     else if (dsum == 21){ /* Result for Dealer Blackjack */
       printf("\nDealer Hit Blackjack!\n");
     }
-    /* ==========ALL THE WIN/LOSE/TIE CHECKS | "else if"s to prevent overlap========== */
+    /* ==========ALL THE WIN/LOSE/PUSH CHECKS | "else if"s to prevent overlap========== */
     if (psum > 21){ /* If you bust, automatic loss */
       printf("\n:( You Lose :(\n");
     }
-    else if (psum == 21 && dsum == 21){ /* If both Blackjack, instant tie */
-      printf("\n:| It's a Tie :|\n");
+    else if (psum == 21 && dsum == 21){ /* If both Blackjack, instant push */
+      printf("\n:| It's a Push :|\n");
     }
     else if (dsum > 21){ /* (By this point, you can only have <=21; If dealer bust, you win */
       printf("\n:) You Win :)\n");
@@ -91,8 +99,8 @@ int main(){
     else if (dsum > psum){ /* If you have less than dealer, you lose */
       printf("\n:( You Lose :(\n");
     }
-    else if (psum == dsum){ /* If your values are equal, it's a tie */
-      printf("\n:| It's a Tie :|\n");
+    else if (psum == dsum){ /* If your values are equal, it's a push */
+      printf("\n:| It's a Push :|\n");
     }
     /* ==========CONTINUE REQUEST========== */
     printf("\nContinue? (y/n): ");
@@ -101,6 +109,7 @@ int main(){
       return 0;
     }
     /* ==========RESET SEQUENCE | To bring game back to square one========== */
+    checkdeck();
     memset(pdeck, 0, 10 * sizeof(pdeck[0])); /* Resets the deck array */
     psum = 0; /* Returns sum to 0 */
     pplace = 0; /* Returns place to 0 */
@@ -115,18 +124,25 @@ int main(){
 /* Adds card(s) to p/d's hand, performing Ace checks as well */
 void givecard(char who, int times){ /* who: p (player) or d (dealer) | times: any int */
   int i;
-  int randnum;
+  int randnum1, randnum2;
+  int decknum = 0;
   if (who == 'p'){ /* Dealing to player */
     for(i=0;i<times;i++){ /* Performs the loop as many times as designated in the function call */
-      randnum = (rand() % (upper -lower + 1)) + lower; /* Generate the random number */
-      if (randnum == 1){ /* For if the card is an Ace */
+      while (decknum == 0){ /* Checks if result is 0 and keeps going if it is */
+        randnum1 = rand() % 8; /* Generate the random numbers */
+        randnum2 = rand() % 13;
+        decknum = wdeck[randnum1][randnum2]; /* Gets the card at that random location */
+      }
+      if (decknum == 1){ /* For if the card is an Ace */
         if (psum < 11){ /* If the total hand sum is less than 11, Ace will be 11; otherwise, it will remain a 1 */
-          randnum = 11;
+          decknum = 11;
         }
       }
-      pdeck[pplace] = randnum; /* Actually sets the card in the hand */
-      psum += randnum; /* Adds card value to overall hand sum */
+      pdeck[pplace] = decknum; /* Actually sets the card in the hand */
+      psum += decknum; /* Adds card value to overall hand sum */
       pplace++; /* Increases the next place in the hand by 1 */
+      wdeck[randnum1][randnum2] = 0; /* Sets that card to 0, marking it as used */
+      decknum = 0; /* Resets value in the case multiple card pulls are needed */
       if (psum > 21){ /* Ace changes for if player has busted */
         for(i=0;i<pplace;i++){ /* Checks through the whole hand for an Ace (11) */
           if (pdeck[i] == 11){ /* If busted and an 11 exists, value is reset to 1 */
@@ -142,15 +158,21 @@ void givecard(char who, int times){ /* who: p (player) or d (dealer) | times: an
   }
   if (who == 'd'){ /* Dealing to dealer | all the rest is the same as player */
     for(i=0;i<times;i++){
-      randnum = (rand() % (upper -lower + 1)) + lower;
-      if (randnum == 1){
+      while (decknum == 0){
+        randnum1 = rand() % 8;
+        randnum2 = rand() % 13;
+        decknum = wdeck[randnum1][randnum2];
+      }
+      if (decknum == 1){
         if (psum < 11){
-          randnum = 11;
+          decknum = 11;
         }
       }
-      ddeck[dplace] = randnum;
-      dsum += randnum;
+      ddeck[dplace] = decknum;
+      dsum += decknum;
       dplace++;
+      wdeck[randnum1][randnum2] = 0;
+      decknum = 0;
       if (dsum > 21){
         for(i=0;i<dplace;i++){
           if (ddeck[i] == 11){
@@ -198,5 +220,34 @@ void displaycards(char who){ /* who: p (player), h (hidden), d (dealer) */
     printf("= %d\n\n",dsum);
   }
 }
+
+/* Checks if the deck is too empty */
+void checkdeck(){
+  int i,j,tempnum;
+  int tot = 0;
+  for (i=0;i<8;i++){ /* Goes through each card checking if they're missing */
+    for (j=0;j<13;j++){
+      tempnum = wdeck[i][j];
+      if (tempnum != 0){
+        tot++;
+      }
+    }
+  }
+  if (tot <= 15){ /* If less than 16 cards are available, the entire deck is reset */
+    int newdeck[8][13] = {{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10},{1,2,3,4,5,6,7,8,9,10,10,10,10}};
+    memcpy(wdeck, newdeck, sizeof(wdeck));
+    deckreset = 1; /* Referenced in the main funtion to
+  }
+}
+
+/* void tempdisdeck(){
+  int i,j;
+  for (i=0;i<8;i++){
+    printf("\n");
+    for (j=0;j<13;j++){
+      printf("%d, ",wdeck[i][j]);
+    }
+  }
+} */
 
 /* And that's all! C go fast! */
